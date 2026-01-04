@@ -157,6 +157,11 @@ if (bilibiliItems.length > 0) {
     link: `https://www.bilibili.com/bangumi/play/ss${item.season_id}`,
     epStatus: item.new_ep?.index_show || ''
   }));
+
+  // 去重：如果 Bilibili 中存在同名番剧，则移除 TMDB 中的对应条目，优先展示 Bilibili 数据（带进度）
+  const bilibiliTitles = new Set(bilibiliMapped.map(item => item.title));
+  animeList = animeList.filter(item => !bilibiliTitles.has(item.title));
+
   animeList = [...animeList, ...bilibiliMapped];
 }
 

@@ -149,9 +149,9 @@ if (bilibiliItems.length > 0) {
     title: item.title,
     originalTitle: item.title,
     poster: item.cover ? item.cover.replace('http://', 'https://') : null,
-    type: 'tv',
+    type: item.season_type_name === '剧场版' || item.season_type_name === '电影' ? 'movie' : 'tv',
     source: 'bilibili',
-    rating: 0,
+    rating: item.rating && item.rating.score ? item.rating.score : 0,
     date: '', 
     overview: item.evaluate || item.brief || "暂无简介",
     link: `https://www.bilibili.com/bangumi/play/ss${item.season_id}`,
@@ -202,7 +202,6 @@ const averageRating = tmdbItems.length > 0
           </div>
           <div class="stat-title">平均评分</div>
           <div class="stat-value text-secondary">{averageRating}</div>
-          <div class="stat-desc">TMDB 评分</div>
         </div>
       </div>
     </div>
@@ -271,6 +270,7 @@ const averageRating = tmdbItems.length > 0
                     alt={anime.title}
                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     loading="lazy"
+                    referrerpolicy="no-referrer"
                   />
                 ) : (
                   <div class="w-full h-full flex items-center justify-center text-base-content/30">
@@ -286,9 +286,9 @@ const averageRating = tmdbItems.length > 0
                   </div>
                 )}
 
-                {/* 类型角标 - Bilibili 使用特定颜色 */}
-                <div class={`absolute top-2 left-2 backdrop-blur-sm text-white px-2 py-1 rounded-xl text-xs font-bold shadow-lg ${anime.source === 'bilibili' ? 'bg-[#23ade5]/90' : 'bg-primary/80'}`}>
-                  {anime.source === 'bilibili' ? 'Bilibili' : (anime.type === 'movie' ? '剧场版' : 'TV')}
+                {/* 类型角标 */}
+                <div class="absolute top-2 left-2 backdrop-blur-sm text-white px-2 py-1 rounded-xl text-xs font-bold shadow-lg bg-primary/80">
+                  {anime.type === 'movie' ? '剧场版' : 'TV'}
                 </div>
 
                 <!-- 悬停遮罩 -->

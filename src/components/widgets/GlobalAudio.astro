@@ -58,7 +58,7 @@ const initialSong = musicList[0] || {};
     </div>
 </div>
 
-<script define:vars={{ initialPlaylist }}>
+<script define:vars={{ initialPlaylist }} is:inline>
     class GlobalMusicPlayer {
         constructor() {
             // First time init: assume elements are present

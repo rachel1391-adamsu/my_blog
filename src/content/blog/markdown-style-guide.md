@@ -5,7 +5,7 @@ description: >-
   Markdown content in Astro.
 pubDate: 2024-07-01T00:00
 image: /image/image3.png
-draft: true
+draft: false
 tags:
   - Markdown
 categories:

@@ -2,7 +2,7 @@
 title: 2026全平台番剧观看指南 (Android/PC/Web)
 description: 目前我所了解的推荐观看番剧网站/app列表
 pubDate: 2026-01-16T17:32
-draft: true
+draft: false
 tags:
   - 番剧指南
 categories: []

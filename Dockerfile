@@ -7,7 +7,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # 复制依赖定义文件
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 # 安装依赖 (使用 npm ci 更稳，如果你没有 package-lock.json，就把这行改成 npm install)
 RUN npm install
@@ -33,4 +33,5 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 80
 
 # 启动 Nginx
+
 CMD ["nginx", "-g", "daemon off;"]

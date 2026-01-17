@@ -48,7 +48,6 @@ import GitHubStats from "@/components/mdx/GitHubStats.astro";
             <li>⚡ <strong>丝滑浏览</strong>：ClientRouter 实现丝滑的页面过渡，提升阅读沉浸感</li>  
           </ul>  
   
-          <h3 class="text-xl font-bold mt-4 mb-2">🎯 功能亮点</h3>  
           <ul class="list-disc list-inside space-y-1">  
             <li>💻 技术分享：记录代码心得与开发实战，构建个人的技术知识库</li>  
             <li>🧭 网站推荐：精选实用工具与宝藏站点，分享互联网优质资源</li>  
@@ -59,15 +58,14 @@ import GitHubStats from "@/components/mdx/GitHubStats.astro";
         </div>
       </div>
     </section>  
-
-      <!-- GitHub Stats -->  
-      <section>  
+      
+      <section class="mt-12">  
         <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">  
-          <Icon name="lucide:github" class="w-6 h-6 text-primary" />  
-          <span>开源贡献</span>  
-        </h2>  
-  
-        <GitHubStats username="kobaridev" showLanguages={false} showCommitGraph={true} />  
+        <Icon name="lucide:github" class="w-6 h-6 text-primary" />  
+        <span>开源贡献</span>  
+      </h2>  
+ 
+      <GitHubStats username="kobaridev" showLanguages={false} showCommitGraph={true} />  
       </section>  
   
       <!-- Tech Stack -->  

@@ -23,7 +23,7 @@ export default defineConfig({
       'import.meta.env.YAML_GITHUB_CONFIG': JSON.stringify(GITHUB_CONFIG || null)
     }
   },
-  site: USER_SITE,
+  site: 'https://blog.1212555.xyz',
   output: "static",
   style: {
     scss: {

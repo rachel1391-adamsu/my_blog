@@ -18,7 +18,7 @@
     "@astrojs/mdx": "^4.3.0",
     "@astrojs/react": "^4.4.2",
     "@astrojs/rss": "^4.0.12",
-    "@astrojs/sitemap": "^3.4.1",
+    "@astrojs/sitemap": "^3.7.0",
     "@astrojs/tailwind": "^6.0.2",
     "@fancyapps/ui": "^6.0.21",
     "@iconify/react": "^6.0.2",

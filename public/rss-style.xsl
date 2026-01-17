@@ -18,12 +18,15 @@
             margin: 0 auto;
             padding: 20px;
             background-color: #f9f9f9;
-            text-align: left;           /* 1. 强制所有文字左对齐，消除大空格 */
-            word-wrap: break-word;      /* 2. 遇到太长的网址强制换行 */
-            overflow-wrap: break-word;  /* 3. 同上，增加兼容性 */  
           }
-            li, p {
-              text-align: left !important; 
+            body, p, li, div, section, article, .item {
+            text-align: left !important;
+            text-justify: auto !important;
+          }
+          * {
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+            word-break: break-word !important;
           }
           header {
             background: #fff;

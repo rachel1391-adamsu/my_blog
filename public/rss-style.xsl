@@ -20,7 +20,10 @@
             background-color: #f9f9f9;
             text-align: left;           /* 1. 强制所有文字左对齐，消除大空格 */
             word-wrap: break-word;      /* 2. 遇到太长的网址强制换行 */
-            overflow-wrap: break-word;  /* 3. 同上，增加兼容性 */
+            overflow-wrap: break-word;  /* 3. 同上，增加兼容性 */  
+          }
+            li, p {
+              text-align: left !important; 
           }
           header {
             background: #fff;

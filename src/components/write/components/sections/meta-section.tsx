@@ -36,6 +36,14 @@ export function MetaSection({ delay = 0, categories = [] }: MetaSectionProps) {
 					onChange={e => updateForm({ summary: e.target.value })}
 				/>
 
+                <div className="text-xs font-medium text-base-content/70">Badge</div>
+				<input
+					placeholder='Pin - 置顶文章（可选）'
+					className='input input-bordered w-full bg-base-100 focus:input-primary text-sm'
+					value={form.badge || ''}
+					onChange={e => updateForm({ badge: e.target.value })}
+				/>
+                
 				<div className="text-xs font-medium text-base-content/70">标签</div>
 				<TagInput tags={form.tags} onChange={tags => updateForm({ tags })} />
 

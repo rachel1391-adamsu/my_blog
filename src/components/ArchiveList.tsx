@@ -8,11 +8,11 @@ import { readFileAsText } from '@/lib/file-utils';
 
 interface Post {
   slug: string;
-  data: {
-    title: string;
-    pubDate: Date | string;
-    description?: string;
-  };
+    data: {
+        title: string;
+        pubDate: Date | string;
+        description?: string;
+    };
 }
 
 interface ArchiveListProps {

@@ -371,6 +371,7 @@ const initialSong = musicList[0] || {};
                 this.audio.src = song.url;
                 this.lrcUrl = song.lrc || (song.url ? song.url.replace(/\.[^/.]+$/, ".lrc") : "");
                 this.lyrics = []; // Clear lyrics
+                this.hasLyrics = !!song.lrc; // 标记是否有歌词
             }
 
             if(autoPlay) {
@@ -696,6 +697,15 @@ const initialSong = musicList[0] || {};
         
         async loadLyrics() {
              try {
+                // 检查是否为纯音乐（没有歌词）
+                const currentSong = this.playlist[this.currentIndex];
+                if (!currentSong.lrc) {
+                    if(this.lyricsContainer) {
+                        this.lyricsContainer.innerHTML = '<p class="text-neu-text-muted text-sm mt-20">纯音乐，请您欣赏</p>';
+                    }
+                    return;
+                }
+                
                 if(!this.lrcUrl) return;
                 const response = await fetch(this.lrcUrl);
                 if (response.ok) {

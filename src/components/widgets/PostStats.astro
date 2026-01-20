@@ -1,19 +1,68 @@
----
-import { Icon } from "astro-icon/components";
-import { umamiConfig } from "@config";
+---  
+import { Icon } from "astro-icon/components";  
+import { umamiConfig } from "@config";  
 
-const { url, layout = 'default' } = Astro.props;
+const { url } = Astro.props;
 const slug = url ? url.split('/').filter(Boolean).pop() : undefined;
----
-{slug && umamiConfig.enable && (
+---  
+{slug && umamiConfig.enable && (  
     <div class="flex items-center gap-x-3 gap-y-1 text-[10px] sm:text-sm text-base-content/70">
         <div class="flex items-center gap-1">  
           <Icon name="lucide:eye" class="h-4 w-4 flex-shrink-0 text-primary" />  
-          <span class="truncate" id={`page-views-${slug}-${layout}`}>-</span>  
+          <span class="truncate" id={`page-views-${slug}`}>-</span>
         </div>
         <div class="flex items-center gap-1">  
           <Icon name="lucide:user" class="h-4 w-4 flex-shrink-0 text-primary" />  
-          <span class="truncate" id={`page-visitors-${slug}-${layout}`}>-</span>  
+          <span class="truncate" id={`page-visitors-${slug}`}>-</span>
         </div>
     </div>
+  <script define:vars={{ slug, umamiConfig }} is:inline>
+    // 获取文章浏览量统计，支持 websiteId 或 shareId
+    async function fetchPostViews() {
+      if (!umamiConfig.enable) {
+        return;
+      }
+
+      const checkInterval = setInterval(async () => {
+        if (typeof window.fetchUmamiStats === 'function') {
+          clearInterval(checkInterval);
+          try {
+            // RyuChan assumes blog posts are at /blog/slug
+            // Adjust this path if your URL structure is different
+            const queryPath = `/blog/${slug}`;
+
+            const statsData = await window.fetchUmamiStats(umamiConfig.baseUrl, umamiConfig.shareId, {
+              timezone: umamiConfig.timezone,
+              path: queryPath
+            });
+
+            const pageViews = (typeof statsData.pageviews === 'object' ? statsData.pageviews.value : statsData.pageviews) || 0;
+            const visits = (typeof statsData.visitors === 'object' ? statsData.visitors.value : statsData.visitors) || 0;
+
+            const viewsElement = document.getElementById(`page-views-${slug}`);
+            const visitorsElement = document.getElementById(`page-visitors-${slug}`);
+
+            if (viewsElement) viewsElement.textContent = `${pageViews} 次`;
+            if (visitorsElement) visitorsElement.textContent = `${visits} 人`;
+          } catch (error) {
+            console.error('Error fetching page views for', slug, ':', error);
+            const viewsElement = document.getElementById(`page-views-${slug}`);
+            const visitorsElement = document.getElementById(`page-visitors-${slug}`);
+
+            if (viewsElement) viewsElement.textContent = '-';
+            if (visitorsElement) visitorsElement.textContent = '-';
+          }
+        }
+      }, 100);
+
+      // Stop checking after 10 seconds
+      setTimeout(() => clearInterval(checkInterval), 10000);
+    }
+
+    // 页面加载完成后获取统计数据
+    document.addEventListener('astro:page-load', fetchPostViews);
+    // Initial run for direct loads (though astro:page-load covers it usually)
+    if (document.readyState === 'complete') fetchPostViews();
+    else document.addEventListener('DOMContentLoaded', fetchPostViews);
+  </script>
 )}

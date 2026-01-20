@@ -42,8 +42,6 @@ const COMMENT_PROVIDERS = [
 
 export function ConfigPage() {
     const [configContent, setConfigContent] = useState('')
-    const [lastFetchedContent, setLastFetchedContent] = useState<string | null>(null)
-    const [isDirty, setIsDirty] = useState(false)
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
     const [mode, setMode] = useState<'visual' | 'code'>('visual')
@@ -95,18 +93,12 @@ export function ConfigPage() {
                 GITHUB_CONFIG.BRANCH
             )
             if (content) {
-                // 如果本地已有未保存的更改（isDirty），则不要覆盖用户当前编辑
-                if (isDirty) {
-                    toast.info('检测到本地未保存更改，已跳过远程配置覆盖')
-                } else {
-                    setConfigContent(content)
-                    try {
-                        setParsedConfig(yaml.load(content))
-                    } catch (e) {
-                        console.error(e)
-                    }
+                setConfigContent(content)
+                try {
+                    setParsedConfig(yaml.load(content))
+                } catch (e) {
+                    console.error(e)
                 }
-                setLastFetchedContent(content)
             }
         } catch (error: any) {
             toast.error('加载配置失败: ' + error.message)
@@ -127,7 +119,6 @@ export function ConfigPage() {
         current[parts[parts.length - 1]] = value
         setParsedConfig(newConfig)
         setConfigContent(yaml.dump(newConfig))
-        setIsDirty(true)
     }
 
     const handleSocialChange = (index: number, field: string, value: any) => {
@@ -330,25 +321,19 @@ export function ConfigPage() {
                 richColors
                 position="top-center"
                 toastOptions={{
-                    className: 'shadow-xl rounded-2xl border-2 border-primary/20 backdrop-blur-sm',
+                    className: 'shadow-2xl border-2 border-base-200',
                     style: {
-                        fontSize: '1rem',
-                        padding: '14px 20px',
-                        zIndex: '999999',
-                        borderRadius: '12px',
-                        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
-                        transition: 'all 0.3s ease-in-out',
+                        fontSize: '1.1rem',
+                        padding: '16px 24px',
                     },
                     classNames: {
-                        title: 'text-lg font-semibold tracking-tight',
-                        description: 'text-sm font-medium opacity-90',
-                        error: 'bg-error/95 text-error-content border-error/30',
-                        success: 'bg-success/95 text-success-content border-success/30',
-                        warning: 'bg-warning/95 text-warning-content border-warning/30',
-                        info: 'bg-info/95 text-info-content border-info/30',
-                    },
-                    duration: 5000,
-                    closeButton: false,
+                        title: 'text-lg font-bold',
+                        description: 'text-base font-medium',
+                        error: 'bg-error text-error-content border-error',
+                        success: 'bg-success text-success-content border-success',
+                        warning: 'bg-warning text-warning-content border-warning',
+                        info: 'bg-info text-info-content border-info',
+                    }
                 }}
             />
 
@@ -432,7 +417,7 @@ export function ConfigPage() {
                             <textarea
                                 className="h-[600px] w-full rounded-xl border border-base-300 bg-base-100 p-6 font-mono text-sm focus:border-primary focus:outline-none resize-none shadow-inner"
                                 value={configContent}
-                                onChange={(e) => { setConfigContent(e.target.value); setIsDirty(true) }}
+                                onChange={(e) => setConfigContent(e.target.value)}
                                 spellCheck={false}
                             />
                         ) : (

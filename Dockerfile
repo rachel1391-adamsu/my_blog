@@ -1,7 +1,7 @@
 # ---------------------------
 # 第一阶段：构建环境 (Builder)
 # ---------------------------
-FROM node:20-alpine AS builder
+FROM public.ecr.aws/docker/library/node:20-alpine AS builder
 
 # 设置工作目录
 WORKDIR /app

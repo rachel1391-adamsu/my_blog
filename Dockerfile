@@ -24,7 +24,7 @@ RUN npm run build
 # ---------------------------
 # 第二阶段：运行环境 (Nginx) - 下面这些不用变
 # ---------------------------
-FROM nginx:alpine
+FROM public.ecr.aws/docker/library/nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]

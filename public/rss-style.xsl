@@ -19,15 +19,6 @@
             padding: 20px;
             background-color: #f9f9f9;
           }
-            body, p, li, div, section, article, .item {
-            text-align: left !important;
-            text-justify: auto !important;
-          }
-          * {
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-            word-break: break-word !important;
-          }
           header {
             background: #fff;
             padding: 20px;

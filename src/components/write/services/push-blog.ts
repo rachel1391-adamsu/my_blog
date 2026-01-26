@@ -1,4 +1,4 @@
-import { toBase64Utf8, getRef, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
+import { toBase64Utf8, getRef, getCommit, createTree, createCommit, updateRef, createBlob, type TreeItem } from '@/lib/github-client'
 import { fileToBase64NoPrefix, hashFileSHA256 } from '@/lib/file-utils'
 import { getAuthToken } from '@/lib/auth'
 import { GITHUB_CONFIG } from '@/consts'
@@ -17,21 +17,23 @@ export type PushBlogParams = {
 }
 
 export async function pushBlog(params: PushBlogParams): Promise<void> {
-    const { form, cover, images, mode = 'create', originalSlug, originalFileFormat } = params
+    const { form, cover, images, mode = 'create' } = params
 
     if (!form?.slug) throw new Error('需要 slug')
-
-    // if (mode === 'edit' && originalSlug && originalSlug !== form.slug) {
-    // 	throw new Error('编辑模式下不支持修改 slug，请保持原 slug 不变')
-    // }
 
     const token = await getAuthToken()
     const toastId = toast.loading('🚀 正在初始化发布...')
 
     try {
         toast.loading('📡 正在同步分支信息...', { id: toastId })
+        // 1. 获取最新 Commit
         const refData = await getRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`)
         const latestCommitSha = refData.sha
+
+        // 2. 获取 Commit 对应的 Tree SHA
+        // 【注意】这里声明了第一次 commitData
+        const commitData = await getCommit(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, latestCommitSha)
+        const latestTreeSha = commitData.tree.sha
 
         const commitMessage = mode === 'edit' ? `feat(blog): update post "${form.title}"` : `feat(blog): publish post "${form.title}"`
 
@@ -108,41 +110,34 @@ export async function pushBlog(params: PushBlogParams): Promise<void> {
 
         toast.loading('📝 正在生成文章内容...', { id: toastId })
         const mdBlob = await createBlob(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, toBase64Utf8(finalContent), 'base64')
+        
         treeItems.push({
-            path: `src/content/blog/${form.slug}.${form.fileFormat}`,
+            path: `src/content/blog/${form.slug}.md`,
             mode: '100644',
             type: 'blob',
             sha: mdBlob.sha
         })
 
-        // 如果是编辑模式且文件格式发生了变化，删除原文件
-        if (mode === 'edit' && originalFileFormat && originalFileFormat !== form.fileFormat) {
-            // 在Git中，删除文件是通过添加一个sha为null的条目来实现的
-            treeItems.push({
-                path: `src/content/blog/${form.slug}.${originalFileFormat}`,
-                mode: '100644',
-                type: 'blob',
-                sha: null // 空sha表示删除文件
-            })
-        }
-
         toast.loading('🌳 正在构建文件树...', { id: toastId })
-        const treeData = await createTree(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, treeItems, latestCommitSha)
+        const treeData = await createTree(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, treeItems, latestTreeSha)
 
         toast.loading('💾 正在提交更改...', { id: toastId })
-        const commitData = await createCommit(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, commitMessage, treeData.sha, [latestCommitSha])
+        
+        // 【修正】这里将变量名改为 newCommitData，防止和上面的 commitData 冲突
+        const newCommitData = await createCommit(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, commitMessage, treeData.sha, [latestCommitSha])
 
         toast.loading('🔄 正在同步远程分支...', { id: toastId })
-        await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, commitData.sha)
+        // 【修正】这里引用 newCommitData.sha
+        await updateRef(token, GITHUB_CONFIG.OWNER, GITHUB_CONFIG.REPO, `heads/${GITHUB_CONFIG.BRANCH}`, newCommitData.sha)
 
-        toast.success(`🎉 ${mode === 'edit' ? '更新' : '发布'}成功！更改已推送到仓库`, {
+        toast.success(`🎉 ${mode === 'edit' ? '更新' : '发布'}成功！更改已推送到仓库`, { 
             id: toastId,
             duration: 5000,
             description: 'GitHub Actions 将会自动部署您的站点，请稍候。'
         })
     } catch (error: any) {
         console.error(error)
-        toast.error('❌ 操作失败', {
+        toast.error('❌ 操作失败', { 
             id: toastId,
             description: error.message || '发生了未知错误，请重试'
         })
